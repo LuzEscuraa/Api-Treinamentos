@@ -30,6 +30,34 @@
       <a href="aula4.html" class="next-button">Próxima Aula</a>
     </div>
   </main>
+<script>
+ 
+  const progressoData = {
+    usuario: { id: 1 },        // ID real do usuário
+    curso: { id: 3 },          // ID real do curso
+    concluido: true            // Marca como concluído  
+  };
+
+  fetch('http://localhost:8080/api/progresso/registrar', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(progressoData)
+  })
+  .then(response => {
+    if (response.ok) {
+      console.log('Progresso marcado como concluído.');
+    } else {
+      console.error('Erro ao registrar conclusão.');
+    }
+  })
+  .catch(error => {
+    console.error('Erro na requisição:', error);
+  });
+</script>
+
+  
 </body>
 </html>
 
