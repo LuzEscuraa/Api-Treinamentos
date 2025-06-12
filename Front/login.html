@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login - TreinaCorp</title>
+  <link rel="stylesheet" href="login.css" />
+</head>
+<body>
+  <div class="form-container">
+    <h2>Acesso ao Portal</h2>
+    <form id="loginForm">
+      <label for="email">E-mail corporativo</label>
+      <input type="email" id="email" name="email" required />
+
+      <label for="senha">Senha</label>
+      <input type="password" id="senha" name="senha" required />
+
+      <button type="submit">Entrar</button>
+    </form>
+    <p>Não tem conta? <a href="cadastro.html">Cadastre-se</a></p>
+  </div>
+
+  <script>
+    document.getElementById('loginForm').addEventListener('submit', function(event) {
+      event.preventDefault();
+
+      const loginData = {
+        email: document.getElementById('email').value,
+        senha: document.getElementById('senha').value
+      };
+
+      fetch('http://localhost:8080/api/usuarios', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(loginData)
+      })
+      .then(response => {
+        if (response.ok) {
+          alert('Login realizado com sucesso!');
+          // Redirecionar ou salvar token aqui
+        } else {
+          alert('E-mail ou senha inválidos.');
+        }
+      })
+      .catch(error => console.error('Erro:', error));
+    });
+  </script>
+</body>
+</html>
