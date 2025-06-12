@@ -4,11 +4,13 @@ package com.treinacorp.treinacorp.controller;
 import com.treinacorp.treinacorp.model.Usuario;
 import com.treinacorp.treinacorp.repo.UsuarioRepo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@CrossOrigin(origins = "http://localhost:8080")
 @RestController
 @RequestMapping("/usuario")
 public class UsuarioController {
@@ -17,11 +19,36 @@ public class UsuarioController {
     UsuarioRepo repo;
 
     @PostMapping("/addusuario")
-    public ResponseEntity<Usuario> addUsuario(@RequestBody Usuario usuario) {
-        usuario.setId(null);
-        usuario.setVersion(0L);
-        return ResponseEntity.ok(repo.save(usuario));
+    public ResponseEntity<?> addUsuario(@RequestBody Usuario usuario) {
+
+        if (repo.existsByEmail(usuario.getEmail())) {
+            return ResponseEntity.badRequest()
+                    .body(new ErrorResponse("Email já cadastrado"));
+        }
+
+        try {
+            usuario.setId(null);
+            usuario.setVersion(0L);
+            Usuario saved = repo.save(usuario);
+            return ResponseEntity.ok(saved);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest()
+                    .body(new ErrorResponse("Erro ao cadastrar usuário: " + e.getMessage()));
+        }
     }
+
+    private static class ErrorResponse {
+        private String message;
+
+        public ErrorResponse(String message) {
+            this.message = message;
+        }
+
+        public String getMessage() {
+            return message;
+        }
+    }
+
 
     @PutMapping("/attusuario/{id}")
     public ResponseEntity<Usuario> attUsuario(@PathVariable Long id, @RequestBody Usuario usuario) {
@@ -53,5 +80,12 @@ public class UsuarioController {
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
+    @PostMapping("/login")
+    public ResponseEntity<Usuario> login(@RequestBody Usuario loginData) {
+        return repo.findByEmailAndSenha(loginData.getEmail(), loginData.getSenha())
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.status(HttpStatus.UNAUTHORIZED).build());
+    }
+
 
 }

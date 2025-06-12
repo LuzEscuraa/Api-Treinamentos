@@ -1,32 +1,80 @@
+<!DOCTYPE html>
 <html lang="pt-br">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Cadastro - TreinaCorp</title>
-  <link rel="stylesheet" href="cadastro.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro - TreinaCorp</title>
+    <link rel="stylesheet" href="cadastro.css">
 </head>
 <body>
-  <div class="form-container">
-    <h2>Cadastro de Usuário</h2>
-    <form id="formCadastro" action="#" method="post">
-      <label for="nome">Nome completo</label>
-      <input type="text" id="nome" name="nome" required />
+    <div class="form-container">
+        <h2>Cadastro de Usuário</h2>
+        <form id="formCadastro">
+            <label for="nome">Nome Completo</label>
+            <input type="text" id="nome" name="nome" required>
 
-      <label for="email">E-mail corporativo</label>
-      <input type="email" id="email" name="email" required />
+            <label for="email">E-mail corporativo</label>
+            <input type="email" id="email" name="email" required>
 
-      <label for="senha">Senha</label>
-      <input type="password" id="senha" name="senha" required />
+            <label for="senha">Senha</label>
+            <input type="password" id="senha" name="senha" required minlength="6">
 
-      <label for="confirmar">Confirmar senha</label>
-      <input type="password" id="confirmar" name="confirmar" required />
+            <label for="confirmar">Confirmar Senha</label>
+            <input type="password" id="confirmar" name="confirmar" required minlength="6">
 
-      <button type="submit">Cadastrar</button>
-    </form>
-    <p>Já tem uma conta? <a href="login.html">Faça login</a></p>
-  </div>
+            <button type="submit">Cadastrar</button>
+        </form>
+        <p>Já tem conta? <a href="login.html">Faça login</a></p>
+    </div>
 
-  <!-- JS no final do body -->
-  <script src="js/app.js"></script>
+    <script>
+        document.getElementById("formCadastro").addEventListener("submit", function (e) {
+            e.preventDefault();
+
+            const nome = document.getElementById("nome").value;
+            const email = document.getElementById("email").value;
+            const senha = document.getElementById("senha").value;
+            const confirmar = document.getElementById("confirmar").value;
+
+            if (senha !== confirmar) {
+                alert("As senhas não coincidem.");
+                return;
+            }
+
+            const dados = { 
+                nome, 
+                email, 
+                senha,
+                version: 0
+            };
+
+           fetch("http://localhost:8080/usuario/addusuario", {
+    method: "POST",
+    headers: { 
+        "Content-Type": "application/json",
+        "Accept": "application/json"
+    },
+    body: JSON.stringify(dados)
+})
+.then(response => {
+    if (response.ok) {
+        return response.json();
+    }
+    return response.json().catch(() => {
+        throw new Error('Erro de conexão com o servidor');
+    }).then(err => {
+        throw new Error(err.message || 'Erro ao cadastrar usuário');
+    });
+})
+.then(data => {
+    alert("Cadastro realizado com sucesso!");
+    window.location.href = "login.html";
+})
+.catch(error => {
+    console.error('Erro:', error);
+    alert(error.message);
+});
+});
+    </script>
 </body>
 </html>

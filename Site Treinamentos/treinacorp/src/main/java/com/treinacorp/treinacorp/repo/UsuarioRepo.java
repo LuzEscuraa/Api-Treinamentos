@@ -3,7 +3,11 @@ package com.treinacorp.treinacorp.repo;
 import com.treinacorp.treinacorp.model.Usuario;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
+import java.util.Optional;
 
 @RepositoryRestResource
 public interface UsuarioRepo extends JpaRepository<Usuario, Long> {
+    Optional<Usuario> findByEmailAndSenha(String email, String senha);
+    boolean existsByEmail(String email);
+
 }
